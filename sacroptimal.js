@@ -9,29 +9,20 @@ function pertePV() {
 		soin = parseInt(soin);
 	else
 		soin = 0;
-	document.getElementById('pvsac').innerHTML = soin;
-	document.getElementById('nbD').innerHTML = Math.floor(1+soin/5);
-	document.getElementById('pvperdus').innerHTML = (soin+2+2*Math.floor(soin/5));
+	var nbD = Math.floor(soin/5)+1;
+	document.getElementById('zonecalc').innerHTML = 'Points de Vie perdus : entre ' + (soin+nbD) + ' et ' + (soin+3*nbD)
+									+ ' PV (moyenne : ' + (soin+2*nbD) + ')';
 	}
 
 function addCalculSacro() {
-	var pvsac = document.createElement('span');
-	pvsac.setAttribute('id','pvsac'); pvsac.innerHTML = '0';
-	var nbD = document.createElement('span');
-	nbD.setAttribute('id','nbD'); nbD.innerHTML = '1';
-	var pvperdus = document.createElement('span');
-	pvperdus.setAttribute('id','pvperdus'); pvperdus.innerHTML = '2';
 	var inode = document.evaluate("//div/i/text()[contains(.,'Chaque')]/..",
 					document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-	var ligne = document.createElement('b');
+	var zonecalc = document.createElement('span');
+	zonecalc.setAttribute('id','zonecalc');
+	zonecalc.innerHTML = 'Points de vie perdus : entre 1 et 3 (moyenne : 2)';
+	var ligne = document.createElement('i');
 	inode.removeChild(inode.firstChild);
-	ligne.appendChild(document.createTextNode('Points de Vie perdus : '));
-	ligne.appendChild(pvsac);
-	ligne.appendChild(document.createTextNode(' + '));
-	ligne.appendChild(nbD);
-	ligne.appendChild(document.createTextNode(' D3 PV (moyenne : '));
-	ligne.appendChild(pvperdus);
-	ligne.appendChild(document.createTextNode(')'));
+	ligne.appendChild(zonecalc);
 	inode.parentNode.insertBefore(ligne,inode);
 	var kinput = document.getElementsByTagName('input')[2];
 	kinput.addEventListener('keyup', pertePV , false);
