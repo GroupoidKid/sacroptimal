@@ -1,15 +1,15 @@
-/*********************************************************************************
-*      Calcul automatique de la perte moyenne de PV sur Sacro - by Dabihul       *
-* Extension pour Mountyzilla - http://mountyzilla.tilk.info/ - 2012-08-14-v3.2   *
-*********************************************************************************/
+/*******************************************************************************
+*     Calcul automatique de la perte moyenne de PV sur Sacro - by Dabihul      *
+* Extension pour Mountyzilla - http://mountyzilla.tilk.info/ - 2013-11-16-v4.0 *
+*******************************************************************************/
 
 function refreshPertePV() {
 	var soin;
-	if (Optimiser)
+	if(Optimiser)
 		soin = listesac.value;
 	else
 		soin = input.value;
-	if (!soin)
+	if(!soin)
 		soin = 0;
 	
 	soin = parseInt(soin);
@@ -21,19 +21,18 @@ function refreshPertePV() {
 
 function switchOptimiser() {
 	Optimiser = (!Optimiser);
-	if (Optimiser) {
-		optibutton.firstChild.nodeValue = '[Mode Normal]';
-		var sacopt = sacmax;
-		if (input.value)
-			sacopt = 5*Math.floor((parseInt(input.value)+1)/5)-1;
-		listesac.selectedIndex = Math.floor(sacopt/5);
+	MZ_setValue('SacroOptimal',Optimiser);
+	if(Optimiser) {
+		optibutton.value = 'Mode Normal';
+		var i = Math.floor((parseInt(input.value)-4)/5);
+		listesac.selectedIndex = i ? Math.max(i,0) : 0;
 		input.setAttribute('name','zip');
 		listesac.setAttribute('name','ai_NbPV');
 		input.parentNode.replaceChild(listesac,input);
 		refreshPertePV();
 		}
 	else {
-		optibutton.firstChild.nodeValue = '[OPTIMISER]';
+		optibutton.value = 'Optimiser!';
 		input.value = parseInt(listesac.value);
 		listesac.setAttribute('name','none');
 		input.setAttribute('name','ai_NbPV');
@@ -51,36 +50,35 @@ function initCalculSacro() {
 	var ligne = document.createElement('b');
 	ligne.appendChild(zonecalc);
 	inode.removeChild(inode.firstChild);
-	inode.parentNode.insertBefore(ligne,inode);
+	insertBefore(inode,ligne);
 	
 	input = document.getElementsByTagName('input')[2];
 	input.addEventListener('keyup',refreshPertePV,false);
 	
-	/* Préparation nouveau mode */
+	/* Préparation mode Optimiser */
 	sacmax = document.evaluate("//div/i/text()[contains(.,'soin')]",
-				document, null, 9, null).singleNodeValue.nodeValue.match(/\d+/);
+					document, null, 9, null).singleNodeValue.nodeValue.match(/\d+/);
 	listesac = document.createElement('select');
-	listesac.setAttribute('class','SelectboxV2');
+	listesac.className = 'SelectboxV2';
 	var sac = 4;
-	while (sac<=sacmax) {
+	while(sac<=sacmax) {
 		appendOption(listesac,sac,sac);
 		sac += 5;
 		}
-	if (!listesac.firstChild)
+	if(!listesac.firstChild)
 		appendOption(listesac,sacmax,sacmax);
-	listesac.addEventListener('mousemove',refreshPertePV,false);
+	listesac.addEventListener('mousemove', refreshPertePV, false);
 	
 	/* Bouton changement de mode */
-	optibutton = document.createElement('a');
-	optibutton.setAttribute('id','optibutton');
-	optibutton.appendChild(document.createTextNode('[OPTIMISER]'));
-	insertText(inode,' - ');
-	inode.parentNode.insertBefore(optibutton,inode);
-	optibutton.addEventListener('click',switchOptimiser,false);
+	optibutton = appendButton(inode.parentNode, 'Optimiser!', switchOptimiser);
+	if(Optimiser) {
+		Optimiser = false;
+		switchOptimiser();
+		}
 	}
 
-if ( isPage('MH_Play/Actions/Sorts/Play_a_Sort17') ) {
-	var Optimiser = false;
+if( isPage('MH_Play/Actions/Sorts/Play_a_Sort17') ) {
+	var Optimiser = MZ_getValue('SacroOptimal');
 	var input, listesac, optibutton, zonecalc, sacmax;
 	initCalculSacro();
 	}
