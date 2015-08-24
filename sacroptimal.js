@@ -1,6 +1,6 @@
 /*******************************************************************************
 *     Calcul automatique de la perte moyenne de PV sur Sacro - by Dabihul      *
-* Extension pour Mountyzilla - http://mountyzilla.tilk.info/ - 2015-08-23-v5.0 *
+* Extension pour Mountyzilla - http://mountyzilla.tilk.info/ - 2015-08-24-v5.1 *
 *******************************************************************************/
 
 
@@ -71,14 +71,15 @@ function switchOptimiser() {
 	
 	if(Optimiser) {
 		optiBouton.value = "Mode Normal";
-		indexMin = isNaN(inputPV.value) ? indexMin :
-			Math.floor((Number(inputPV.value)+1)/5)-Math.floor(nbValeurs/2);
+		indexMin = Number(inputPV.value) ?
+			Math.floor((Number(inputPV.value)+1)/5)-Math.floor(nbValeurs/2) :
+			indexMin;
 		refreshDisplayListeSac();
 		// Attention a bien laisser des setAttribute pour que
 		// le formulaire php puisse accéder aux modifs
 		inputPV.setAttribute("name","dummy");
 		listeSac.setAttribute("name","ai_NbPV");
-		divAction.replaceChild(listeSac,inputPV);	
+		divAction.replaceChild(listeSac,inputPV);
 	} else {
 		optiBouton.value = "Optimiser!";
 		inputPV.value = listeSac.value;
@@ -142,7 +143,10 @@ var
 	listeSac,
 	// Span contenant le texte de perte de PV :
 	pertePV;
-	
+
+window.alert( "test:"+isNaN(MZ_getValue("SacroOptimal.indexMin"))+","+
+	MZ_getValue("SacroOptimal.indexMin") );
+
 var
 	// On récupère les données mémorisées
 	// - État Normal / Optimisé :
