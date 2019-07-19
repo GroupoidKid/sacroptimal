@@ -33,7 +33,7 @@ function initCalculSacro() {
 	divAction.appendChild(pertePV);
 	inputPV.onkeyup = refreshPertePV;
 	
-	// Création de la liste des sacros optimisés (4 -> 249)
+	// CrÃ©ation de la liste des sacros optimisÃ©s (4 -> 249)
 	listeSac = document.createElement("select");
 	listeSac.className = "SelectboxV2";
 	opt = appendOption(listeSac,NaN,"---");
@@ -76,7 +76,7 @@ function switchOptimiser() {
 			indexMin;
 		refreshDisplayListeSac();
 		// Attention a bien laisser des setAttribute pour que
-		// le formulaire php puisse accéder aux modifs
+		// le formulaire php puisse accÃ©der aux modifs
 		inputPV.setAttribute("name","dummy");
 		listeSac.setAttribute("name","ai_NbPV");
 		divAction.replaceChild(listeSac,inputPV);
@@ -121,12 +121,12 @@ function refreshPertePV() {
 
 /*---------------------------------- Cervo -----------------------------------*/
 
-// On vérifie que le sort lancé est bien Sacro :
+// On vÃ©rifie que le sort lancÃ© est bien Sacro :
 if(!isPage("MH_Play/Actions/Sorts/Play_a_SortYY")) { return; }
 var idSort = document.getElementsByName("ai_IdSort");
 if(!idSort[0] || !idSort[0].value || idSort[0].value!=17) { return; }
 
-// On récupère les éléments du cadre fondamentaux pour le script :
+// On rÃ©cupÃ¨re les Ã©lÃ©ments du cadre fondamentaux pour le script :
 var
 	inputPV = document.getElementsByName("ai_NbPV")[0],
 	titre4 = document.getElementsByClassName("titre4")[0],
@@ -137,7 +137,7 @@ if(!inputPV || !titre4 || !divAction) {
 }
 
 var
-	// Bouton de mode (Normal <-> Optimisé) :
+	// Bouton de mode (Normal <-> OptimisÃ©) :
 	optiBouton,
 	// Liste des sacros optimaux :
 	listeSac,
@@ -148,13 +148,13 @@ window.alert( "test:"+isNaN(MZ_getValue("SacroOptimal.indexMin"))+","+
 	MZ_getValue("SacroOptimal.indexMin") );
 
 var
-	// On récupère les données mémorisées
-	// - État Normal / Optimisé :
+	// On rÃ©cupÃ¨re les donnÃ©es mÃ©morisÃ©es
+	// - Ã‰tat Normal / OptimisÃ© :
 	Optimiser = MZ_getValue("SacroOptimal"),
-	// - Nombre de valeurs affichées dans la liste :
+	// - Nombre de valeurs affichÃ©es dans la liste :
 	nbValeurs = isNaN(MZ_getValue("SacroOptimal.nbValeurs")) ?
 		11 : Number(MZ_getValue("SacroOptimal.nbValeurs")),
-	// - Valeur minimale par défaut du sacrifice en mode optimisé :
+	// - Valeur minimale par dÃ©faut du sacrifice en mode optimisÃ© :
 	indexMin = isNaN(MZ_getValue("SacroOptimal.indexMin")) ?
 		1 : Number(MZ_getValue("SacroOptimal.indexMin"));
 
