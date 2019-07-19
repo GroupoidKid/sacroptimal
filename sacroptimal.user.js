@@ -12,6 +12,15 @@
  *           Calcul automatique de la perte moyenne de PV sur Sacro           *
  ******************************************************************************/
 
+/*------------------------------- LocalStorage -------------------------------*/
+
+function setValue(key, value) {
+	window.localStorage.setItem(key, value);
+}
+
+function getValue(key) {
+	return window.localStorage.getItem(key);
+}
 
 /*------------------------ Fonctions d'initialisation ------------------------*/
 
@@ -76,7 +85,7 @@ function initCalculSacro() {
 
 function switchOptimiser() {
 	Optimiser = (!Optimiser);
-	MZ_setValue("SacroOptimal", Optimiser);
+	setValue("SacroOptimal", Optimiser);
 
 	if (Optimiser) {
 		optiBouton.value = "Mode Normal";
@@ -104,7 +113,7 @@ function switchOptimiser() {
 function refreshDisplayListeSac() {
 	indexMin = Math.max(Math.min(indexMin, 51 - nbValeurs), 1);
 	var indexMax = Math.min(indexMin + nbValeurs - 1, 50);
-	MZ_setValue("SacroOptimal.indexMin", indexMin);
+	setValue("SacroOptimal.indexMin", indexMin);
 
 	for (var i = 1; i < 51; ++i) {
 		if (i > indexMax || i < indexMin) {
@@ -158,20 +167,20 @@ var
 	pertePV;
 
 window.alert(
-	"test:" + isNaN(MZ_getValue("SacroOptimal.indexMin")) + "," +
-	MZ_getValue("SacroOptimal.indexMin")
+	"test:" + isNaN(getValue("SacroOptimal.indexMin")) + "," +
+	getValue("SacroOptimal.indexMin")
 );
 
 var
 	// On récupère les données mémorisées
 	// - État Normal / Optimisé :
-	Optimiser = MZ_getValue("SacroOptimal"),
+	Optimiser = getValue("SacroOptimal"),
 	// - Nombre de valeurs affichées dans la liste :
-	nbValeurs = isNaN(MZ_getValue("SacroOptimal.nbValeurs")) ?
-		11 : Number(MZ_getValue("SacroOptimal.nbValeurs")),
+	nbValeurs = isNaN(getValue("SacroOptimal.nbValeurs")) ?
+		11 : Number(getValue("SacroOptimal.nbValeurs")),
 	// - Valeur minimale par défaut du sacrifice en mode optimisé :
-	indexMin = isNaN(MZ_getValue("SacroOptimal.indexMin")) ?
-		1 : Number(MZ_getValue("SacroOptimal.indexMin"));
+	indexMin = isNaN(getValue("SacroOptimal.indexMin")) ?
+		1 : Number(getValue("SacroOptimal.indexMin"));
 
 gestionTitre4();
 initCalculSacro();
