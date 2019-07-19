@@ -1,6 +1,15 @@
+// ==UserScript==
+// @name         [Mountyhall] SacrOptimal
+// @namespace    Mountyhall
+// @description  Assistant Sacrifice
+// @author       Dabihul
+// @version      6.0a.0.0
+// @include      */mountyhall/MH_Play/Actions/Sorts/Play_a_SortYY.php*
+// @grant        none
+// ==/UserScript==
+
 /*******************************************************************************
-*     Calcul automatique de la perte moyenne de PV sur Sacro - by Dabihul      *
-* Extension pour Mountyzilla - http://mountyzilla.tilk.info/ - 2015-08-24-v5.1 *
+*            Calcul automatique de la perte moyenne de PV sur Sacro            *
 *******************************************************************************/
 
 
