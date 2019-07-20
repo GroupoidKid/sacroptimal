@@ -3,7 +3,7 @@
 // @namespace    Mountyhall
 // @description  Assistant Sacrifice
 // @author       Dabihul
-// @version      6.0a.0.0
+// @version      6.0.0.0
 // @include      */mountyhall/MH_Play/Actions/Sorts/Play_a_SortYY.php*
 // @grant        none
 // ==/UserScript==
@@ -30,6 +30,19 @@ function getValue(key) {
 
 /*----------------------------------- DOM ------------------------------------*/
 
+function appendBouton(parent, value, onClick) {
+	var input = document.createElement("input");
+	input.type = "button";
+	input.className = "mh_form_submit";
+	input.value = value;
+	input.onmouseover = function() {
+		this.style.cursor = "pointer";
+	};
+	input.onclick = onClick;
+	parent.appendChild(input);
+	return input;
+}
+
 function appendOption(select, value, text) {
 	var option = document.createElement("option");
 	option.value = value;
@@ -54,33 +67,39 @@ function gestionTitre4() {
 }
 
 function initCalculSacro() {
-	nbValeurs = Math.max( Math.min(nbValeurs,50), 1);
-	var opt, txt;
-
+	nbValeurs = Math.max( Math.min(nbValeurs, 31), 1);
+	// indexMin est vérifié à chaque refresh de listeSac
+	var sacroMax, opt, txt;
+	try {
+		sacroMax = parseInt(document.evaluate(
+			".//text()[contains(.,'maximum')]",
+			divAction, null, 9, null
+		).singleNodeValue.textContent.match(/\d+/)[0]);
+	} catch(e) {
+		window.console.warn("[SacrOptimal] Soin maximum non trouvé", e);
+		sacroMax = 250;
+	}
+	
 	// Ajout du bouton changement de mode
-	optiBouton = document.createElement("input");
-	optiBouton.type = "button";
-	optiBouton.className = "mh_form_submit";
-	optiBouton.value = "Optimiser!";
-	optiBouton.onmouseover = function() {
-		this.style.cursor = "pointer";
-	};
-	optiBouton.onclick = switchOptimiser;
-	divAction.appendChild(optiBouton);
-
+	optiBouton = appendBouton(divAction, "Optimiser!", switchOptimiser);
+	
+	// Ajout des boutons [+] et [-] (taille de listeSac)
+	augmenteListeSac = appendBouton(divAction, "[+]", plusDeChoix);
+	diminueListeSac = appendBouton(divAction, "[-]", moinsDeChoix);
+	
 	// Initialisation affichage PV perdus
 	pertePV = document.createElement("span");
 	pertePV.innerHTML = "---";
 	divAction.appendChild(document.createElement("br"));
 	divAction.appendChild(pertePV);
 	inputPV.onkeyup = refreshPertePV;
-
+	
 	// Création de la liste des sacros optimisés (4 -> 249)
 	listeSac = document.createElement("select");
 	listeSac.className = "SelectboxV2";
 	opt = appendOption(listeSac, NaN, "---");
 	opt.onclick = choixPlusPetits;
-	for (var sac=4 ; sac<250 ; sac+=5) {
+	for (var sac=4 ; sac<sacroMax ; sac+=5) {
 		if (PVsPerdusEnTitre) {
 			txt = sac;
 		} else {
@@ -94,7 +113,7 @@ function initCalculSacro() {
 	opt = appendOption(listeSac, NaN, "+++");
 	opt.onclick = choixPlusGrands;
 	listeSac.onchange = refreshPertePV;
-
+	
 	// Initialisation du mode Optimiser
 	if (Optimiser) {
 		Optimiser = 0;
@@ -109,7 +128,7 @@ function initCalculSacro() {
 function switchOptimiser() {
 	Optimiser = 1-Optimiser;
 	setValue("SacrOptimal.Optimiser", Optimiser);
-
+	
 	if (Optimiser) {
 		optiBouton.value = "Mode Normal";
 		indexMin = Number(inputPV.value) ?
@@ -121,6 +140,8 @@ function switchOptimiser() {
 		inputPV.setAttribute("name", "dummy");
 		listeSac.setAttribute("name", "ai_NbPV");
 		inputPV.parentNode.replaceChild(listeSac, inputPV);
+		augmenteListeSac.style.display = "";
+		diminueListeSac.style.display = "";
 	} else {
 		optiBouton.value = "Optimiser!";
 		inputPV.value = listeSac.value;
@@ -128,17 +149,20 @@ function switchOptimiser() {
 		listeSac.setAttribute("name", "dummy");
 		inputPV.setAttribute("name", "ai_NbPV");
 		listeSac.parentNode.replaceChild(inputPV, listeSac);
+		augmenteListeSac.style.display = "none";
+		diminueListeSac.style.display = "none";
+		refreshPertePV();
 	}
-
-	refreshPertePV();
 }
 
 function refreshDisplayListeSac() {
-	indexMin = Math.max( Math.min(indexMin,51-nbValeurs), 1);
-	var indexMax = Math.min(indexMin+nbValeurs-1, 50);
+	indexMin = Math.max( 1,
+		Math.min(indexMin, listeSac.children.length-1-nbValeurs),
+	);
 	setValue("SacrOptimal.indexMin", indexMin);
-
-	for (var i=1 ; i<51 ; ++i) {
+	var indexMax = Math.min(indexMin+nbValeurs, listeSac.children.length)-1;
+	
+	for (var i=1 ; i<listeSac.children.length-1 ; ++i) {
 		if (i>indexMax || i<indexMin) {
 			listeSac.childNodes[i].style.display = "none";
 		} else {
@@ -146,6 +170,8 @@ function refreshDisplayListeSac() {
 		}
 	}
 	listeSac.selectedIndex = indexMin + Math.floor(nbValeurs/2);
+	
+	refreshPertePV();
 }
 
 function refreshPertePV() {
@@ -162,13 +188,33 @@ function refreshPertePV() {
 }
 
 function choixPlusGrands() {
-	indexMin += Math.max(1, Math.ceil(nbValeurs/2));
+	indexMin += Math.ceil(nbValeurs/2);
 	refreshDisplayListeSac();
 }
 
 function choixPlusPetits() {
-	indexMin -= Math.max(1, Math.ceil(nbValeurs/2));
+	indexMin -= Math.ceil(nbValeurs/2);
 	refreshDisplayListeSac();
+}
+
+function plusDeChoix() {
+	nbValeurs += 2;
+	if (nbValeurs > 31) {
+		nbValeurs = 31;
+	}
+	setValue("SacrOptimal.nbValeurs");
+	refreshDisplayListeSac();
+	refreshPertePV();
+}
+
+function moinsDeChoix() {
+	nbValeurs -= 2;
+	if (nbValeurs < 1) {
+		nbValeurs = 1;
+	}
+	setValue("SacrOptimal.nbValeurs");
+	refreshDisplayListeSac();
+	refreshPertePV();
 }
 
 /*---------------------------------- Cervo -----------------------------------*/
@@ -195,6 +241,7 @@ var
 	optiBouton,
 	// Liste des sacros optimaux :
 	listeSac,
+	augmenteListeSac, diminueListeSac,
 	// Span contenant le texte de perte de PV :
 	pertePV,
 	
@@ -202,7 +249,7 @@ var
 	// - État Normal / Optimisé :
 	Optimiser = getValue("SacrOptimal.Optimiser")==1 ? 1 : 0,
 	// - Nombre de valeurs affichées dans la liste :
-	nbValeurs = Number(getValue("SacrOptimal.nbValeurs")) || 11,
+	nbValeurs = Number(getValue("SacrOptimal.nbValeurs")) || 9,
 	// - Valeur minimale par défaut du sacrifice en mode optimisé :
 	indexMin = Number(getValue("SacrOptimal.indexMin")) || 1;
 
