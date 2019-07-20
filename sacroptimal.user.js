@@ -73,18 +73,16 @@ function initCalculSacro() {
 	listeSac = document.createElement("select");
 	listeSac.className = "SelectboxV2";
 	opt = appendOption(listeSac, NaN, "---");
-	opt.onclick = function() {
-		indexMin -= Math.max(1, nbValeurs-2);
-		refreshDisplayListeSac();
-	}
+	opt.onclick = choixPlusPetits;
 	for (var sac=4 ; sac<250 ; sac+=5) {
-		appendOption(listeSac, sac, sac);
+		appendOption(
+			listeSac,
+			sac,
+			sac + " (-" + (sac+2*Math.floor(sac/5)+2) + ")"
+		);
 	}
 	opt = appendOption(listeSac, NaN, "+++");
-	opt.onclick = function() {
-		indexMin += Math.max(1, nbValeurs-2);
-		refreshDisplayListeSac();
-	}
+	opt.onclick = choixPlusGrands;
 	listeSac.onchange = refreshPertePV;
 
 	// Initialisation du mode Optimiser
@@ -153,11 +151,22 @@ function refreshPertePV() {
 	}
 }
 
+function choixPlusGrands() {
+	indexMin += Math.max(1, Math.ceil(nbValeurs/2));
+	refreshDisplayListeSac();
+}
+
+function choixPlusPetits() {
+	indexMin -= Math.max(1, Math.ceil(nbValeurs/2));
+	refreshDisplayListeSac();
+}
+
 /*---------------------------------- Cervo -----------------------------------*/
 
 // On vérifie que le sort lancé est bien Sacro :
 var idSort = document.getElementsByName("ai_IdSort");
-if (!idSort[0] || !idSort[0].value || idSort[0].value != 17) {
+if (!idSort[0] || !idSort[0].value || idSort[0].value!=17) {
+	window.console.log("[SacrOptimal] Pas un Sacrifice");
 	return;
 }
 
