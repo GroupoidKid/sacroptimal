@@ -12,6 +12,12 @@
  *           Calcul automatique de la perte moyenne de PV sur Sacro           *
  ******************************************************************************/
 
+/*---------------------------- Variables Globales ----------------------------*/
+
+// Affichage des PVs perdus en titre dans le menu déroulant
+// plutôt que directement dans le texte :
+var PVsPerdusEnTitre = false;
+
 /*------------------------------- LocalStorage -------------------------------*/
 
 function setValue(key, value) {
@@ -49,7 +55,7 @@ function gestionTitre4() {
 
 function initCalculSacro() {
 	nbValeurs = Math.max( Math.min(nbValeurs,50), 1);
-	var opt;
+	var opt, txt;
 
 	// Ajout du bouton changement de mode
 	optiBouton = document.createElement("input");
@@ -75,11 +81,15 @@ function initCalculSacro() {
 	opt = appendOption(listeSac, NaN, "---");
 	opt.onclick = choixPlusPetits;
 	for (var sac=4 ; sac<250 ; sac+=5) {
-		appendOption(
-			listeSac,
-			sac,
-			sac + " (-" + (sac+2*Math.floor(sac/5)+2) + ")"
-		);
+		if (PVsPerdusEnTitre) {
+			txt = sac;
+		} else {
+			txt = sac + " (-" + (sac+2*Math.floor(sac/5)+2) + ")";
+		}
+		opt = appendOption(listeSac, sac, txt);
+		if (PVsPerdusEnTitre) {
+			opt.title = "-" + (sac+2*Math.floor(sac/5)+2);
+		}
 	}
 	opt = appendOption(listeSac, NaN, "+++");
 	opt.onclick = choixPlusGrands;
