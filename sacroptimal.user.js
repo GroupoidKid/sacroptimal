@@ -3,7 +3,7 @@
 // @namespace    Mountyhall
 // @description  Assistant Sacrifice
 // @author       Dabihul
-// @version      6.0.0.0
+// @version      6.0.0.1
 // @include      */mountyhall/MH_Play/Actions/Sorts/Play_a_SortYY.php*
 // @grant        none
 // ==/UserScript==
@@ -202,7 +202,7 @@ function plusDeChoix() {
 	if (nbValeurs > 31) {
 		nbValeurs = 31;
 	}
-	setValue("SacrOptimal.nbValeurs");
+	setValue("SacrOptimal.nbValeurs", nbValeurs);
 	refreshDisplayListeSac();
 	refreshPertePV();
 }
@@ -212,7 +212,7 @@ function moinsDeChoix() {
 	if (nbValeurs < 1) {
 		nbValeurs = 1;
 	}
-	setValue("SacrOptimal.nbValeurs");
+	setValue("SacrOptimal.nbValeurs", nbValeurs);
 	refreshDisplayListeSac();
 	refreshPertePV();
 }
